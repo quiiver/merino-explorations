@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jarino
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: jarino
+  template:
+    metadata:
+      labels:
+        app: jarino
+    spec:
+      containers:
+      - name: jarino
+        image: us-central1-docker.pkg.dev/wstuckey-sandbox/jarino-repo/jarino:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        # This environment variable enables debugging support for the container.
+        # Remove this to disable the debug build.
+        - name: JAVA_TOOL_OPTIONS
+          value: -agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 5

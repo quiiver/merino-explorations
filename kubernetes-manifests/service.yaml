@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jarino-lb
+spec:
+  type: LoadBalancer
+  selector:
+    app: jarino
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
