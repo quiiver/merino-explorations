@@ -11,9 +11,11 @@ const hosts = {
   "local": "127.0.0.1:8080"
 }
 
+const providers = __ENV.PROVIDERS || ""
+
 export default function() {
   const host = hosts[__ENV.HOST] || hosts.local
   const query = data[Math.floor(Math.random() * data.length)];
-  const uri = `http://${host}/search?q=${encodeURIComponent(query)}`; 
+  const uri = `http://${host}/search?providers=${providers}&q=${encodeURIComponent(query)}`; 
   http.get(uri);
 };
