@@ -3,10 +3,13 @@ from asyncio.exceptions import TimeoutError
 from typing import Dict
 from urllib.parse import quote
 from elasticsearch import AsyncElasticsearch
+from sanic.log import logger
+
+from app.providers.base import DefaultProvider
 
 ES_HOST = "http://35.192.164.92:9200/"
 
-class Provider():
+class Provider(DefaultProvider):
 
     def __init__(self):
         self.es_client = AsyncElasticsearch(hosts=[ES_HOST], sniff_on_start=True)
@@ -14,11 +17,12 @@ class Provider():
     async def query(self, q: str):
         output = []
         try:
-            res = await wait_for(self.es_client.search(index="enwiki", query=self.get_query(q), size=2), 0.250)
+            res = await wait_for(self.es_client.search(index="enwiki", query=self.get_query(q), size=2), 0.50)
             if 'hits' in res:
                 for doc in res['hits']['hits']:
                     output.append(self.format_suggestion(doc))
         except TimeoutError:
+            logger.info("cancelled due to es request timeout")
             pass
         return output
 

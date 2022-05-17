@@ -1,9 +1,9 @@
-import traceback
 from typing import List, Dict, Any
 
 from app import remotesettings
+from app.providers.base import DefaultProvider
 
-class Provider():
+class Provider(DefaultProvider):
     
     suggestions: Dict[str, int] = {}
     results: List[Dict[str, Any]] = []
