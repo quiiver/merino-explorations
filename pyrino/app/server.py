@@ -1,13 +1,18 @@
 from asyncio import gather
 from sanic import Sanic
 from sanic.response import json
+
+from app.providers import wikipedia
 from .providers import adm
 
 app = Sanic("pyrino")
 
 @app.before_server_start
 async def main_start(_):
-    app.ctx.providers = [adm.AdmProvider()]
+    app.ctx.providers = {
+        "adm": adm.Provider(),
+        "wiki": wikipedia.Provider()
+    }
 
 RESPONSE = {
   "suggestions": [],
@@ -19,7 +24,8 @@ RESPONSE = {
 @app.route("/search")
 async def search(request):
     query = request.args.get("q")
-    lookups = [provider.query(query) for provider in request.ctx.providers]
+    providers = request.args.get("p", "adm").split(",")
+    lookups = [app.ctx.providers[p].query(query) for p in providers]
     results = await gather(*lookups)
     if len(results):
         RESPONSE["suggestions"] = [sugg for provider_results in results for sugg in provider_results]

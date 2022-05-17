@@ -1,43 +1,45 @@
-import os
-from json import load
-from typing import Optional, Dict, Any
+import traceback
+from typing import List, Dict, Any
 
-SUGGEST_FILES_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../data/")
+from app import remotesettings
 
-class AdmProvider():
+class Provider():
     
-    suggestions: Optional[Dict[str, int]] = None
-    results: Optional[Dict[int, Dict[str, Any]]] = None
+    suggestions: Dict[str, int] = {}
+    results: List[Dict[str, Any]] = []
+    icons: Dict[int, str] = {}
 
     def __init__(self):
-        if self.suggestions is None:
-            with open(os.path.join(SUGGEST_FILES_PATH, "InstantSuggest_Queries_20220125.json")) as queries_file:
-                self.suggestions = load(queries_file).get("mapping")
-        if self.results is None:
-            self.results = {}
-            with open(os.path.join(SUGGEST_FILES_PATH, "InstantSuggest_Results_20220125.json")) as queries_file:
-                blocks = load(queries_file).get("blocks")
-                for block in blocks:
-                    self.results[block.get("id")] = block
+        rs = remotesettings.Client()
+        suggest_settings = rs.get("main", "quicksuggest")
+        data_items = [i for i in suggest_settings if i['type'] == 'data']
+        for item in data_items: 
+            res = rs.fetch_attachment(item['attachment']['location'])
+            for suggestion in res.json():
+                id = len(self.results)
+                for kw in suggestion.get("keywords"):
+                    self.suggestions[kw] = id
+                self.results.append({k:suggestion[k] for k in suggestion if k != 'keywords'})
+        icon_items = [i for i in suggest_settings if i['type'] == 'icon']
+        for icon in icon_items:
+            self.icons[icon["id"]] = icon["attachment"]["location"]
 
     async def query(self, q: str):
-        if self.suggestions is not None:
-            id = self.suggestions.get(q)
-            if id != None and self.results is not None:
-                res = self.results.get(id)
-                if res != None:
-                    brand = res["brand"]
-                    return [{
-                        "block_id": brand.get("id"),
-                        "full_keyword": q,
-                        "title": brand.get("title"),
-                        "url": brand.get("advertiser_url"),
-                        "impression_url": res.get("impression_url"),
-                        "click_url": brand.get("click_url"),
-                        "provider": "adm",
-                        "advertiser": brand.get("name"),
-                        "is_sponsored": True,
-                        "icon": brand.get("image_url"),
-                        "score": 0.5,
-                    }]
+        id = self.suggestions.get(q)
+        if id != None:
+            res = self.results[id]
+            if res != None:
+                return [{
+                    "block_id": res.get("id"),
+                    "full_keyword": q,
+                    "title": res.get("title"),
+                    "url": res.get("url"),
+                    "impression_url": res.get("impression_url"),
+                    "click_url": res.get("click_url"),
+                    "provider": "adm",
+                    "advertiser": res.get("advertiser"),
+                    "is_sponsored": True,
+                    "icon": self.icons.get(res.get("icon")),
+                    "score": 0.5,
+                }]
         return []

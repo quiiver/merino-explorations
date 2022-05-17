@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: pyrino
 spec:
-  replicas: 10
+  replicas: 5
   selector:
     matchLabels:
       app.kubernetes.io/name: pyrino
