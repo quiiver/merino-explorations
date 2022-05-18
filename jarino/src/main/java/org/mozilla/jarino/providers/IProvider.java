@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface IProvider {
   public List<Suggestion> query(String queryString);
+
+  public boolean defaultEnabled();
 }

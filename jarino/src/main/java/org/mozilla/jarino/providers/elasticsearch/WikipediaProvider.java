@@ -84,4 +84,9 @@ public class WikipediaProvider implements IProvider {
     return base + URLEncoder.encode(
         title.replace(" ", "_"), StandardCharsets.UTF_8);
   }
+
+  @Override
+  public boolean defaultEnabled() {
+    return true;
+  }
 }

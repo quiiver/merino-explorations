@@ -43,10 +43,15 @@ public class AdmProvider implements IProvider {
   }
 
   @Override
+  public boolean defaultEnabled() {
+    return true;
+  }
+
+  @Override
   public List<Suggestion> query(String queryString) {
     return Optional.ofNullable(queries.mapping().get(queryString))
         .map(idx -> resultsTable.get(idx))
-        .filter(block -> block.brand().name().equals("wikipedia"))
+        .filter(block -> !block.brand().name().equals("wikipedia"))
         .map(block -> Suggestion.builder()
             .blockId(block.brand().id())
             .fullKeyword(block.brand().title().toLowerCase())
