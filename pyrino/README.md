@@ -37,27 +37,26 @@ k6 run --vus 200 --duration 10m -e HOST=python -e PROVIDERS=adm ./load-tests/tes
   scenarios: (100.00%) 1 scenario, 200 max VUs, 10m30s max duration (incl. graceful stop):
            * default: 200 looping VUs for 10m0s (gracefulStop: 30s)
 
-^C
-running (00m44.8s), 000/200 VUs, 227441 complete and 200 interrupted iterations
-default ✗ [=>------------------------------------] 200 VUs  00m44.8s/10m0s
 
-     data_received..................: 172 MB 3.8 MB/s
-     data_sent......................: 27 MB  604 kB/s
-     http_req_blocked...............: avg=80.36µs min=0s      med=1µs     max=172.77ms p(90)=2µs     p(95)=2µs
-     http_req_connecting............: avg=79.02µs min=0s      med=0s      max=172.75ms p(90)=0s      p(95)=0s
-     http_req_duration..............: avg=39.2ms  min=29.61ms med=36.3ms  max=1.59s    p(90)=42.15ms p(95)=45.36ms
-       { expected_response:true }...: avg=39.2ms  min=29.61ms med=36.3ms  max=1.59s    p(90)=42.15ms p(95)=45.36ms
-     http_req_failed................: 0.00%  ✓ 0           ✗ 227441
-     http_req_receiving.............: avg=23.44µs min=5µs     med=15µs    max=19.12ms  p(90)=25µs    p(95)=34µs
-     http_req_sending...............: avg=7.39µs  min=1µs     med=5µs     max=11.03ms  p(90)=8µs     p(95)=11µs
+running (10m00.0s), 000/200 VUs, 3071333 complete and 0 interrupted iterations
+default ✓ [======================================] 200 VUs  10m0s
+
+     data_received..................: 2.3 GB  3.9 MB/s
+     data_sent......................: 365 MB  608 kB/s
+     http_req_blocked...............: avg=7.78µs  min=0s      med=1µs     max=167.68ms p(90)=2µs     p(95)=2µs
+     http_req_connecting............: avg=6.24µs  min=0s      med=0s      max=167.66ms p(90)=0s      p(95)=0s
+     http_req_duration..............: avg=38.98ms min=29.53ms med=36.52ms max=1.66s    p(90)=47.03ms p(95)=51.28ms
+       { expected_response:true }...: avg=38.98ms min=29.53ms med=36.52ms max=1.66s    p(90)=47.03ms p(95)=51.28ms
+     http_req_failed................: 0.00%   ✓ 0           ✗ 3071333
+     http_req_receiving.............: avg=28.11µs min=4µs     med=15µs    max=40.37ms  p(90)=27µs    p(95)=40µs
+     http_req_sending...............: avg=8.58µs  min=1µs     med=5µs     max=27.48ms  p(90)=9µs     p(95)=11µs
      http_req_tls_handshaking.......: avg=0s      min=0s      med=0s      max=0s       p(90)=0s      p(95)=0s
-     http_req_waiting...............: avg=39.17ms min=29.6ms  med=36.27ms max=1.59s    p(90)=42.11ms p(95)=45.32ms
-     http_reqs......................: 227441 5079.272276/s
-     iteration_duration.............: avg=39.34ms min=29.65ms med=36.36ms max=1.77s    p(90)=42.21ms p(95)=45.43ms
-     iterations.....................: 227441 5079.272276/s
-     vus............................: 200    min=200       max=200
-     vus_max........................: 200    min=200       max=200
-
+     http_req_waiting...............: avg=38.94ms min=29.51ms med=36.49ms max=1.66s    p(90)=46.99ms p(95)=51.24ms
+     http_reqs......................: 3071333 5118.480203/s
+     iteration_duration.............: avg=39.06ms min=29.59ms med=36.6ms  max=1.83s    p(90)=47.1ms  p(95)=51.35ms
+     iterations.....................: 3071333 5118.480203/s
+     vus............................: 190     min=190       max=200
+     vus_max........................: 200     min=200       max=200
 ```
 
 ## AdM and Elasticsearch
