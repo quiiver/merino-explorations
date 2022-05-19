@@ -14,8 +14,9 @@ spec:
         app.kubernetes.io/name: pyrino
     spec:
       containers:
-      - image: us-central1-docker.pkg.dev/wstuckey-sandbox/pyrino-repo/pyrino
-        name: pyrino
+      - name: pyrino
+        image: us-central1-docker.pkg.dev/wstuckey-sandbox/pyrino-repo/pyrino:latest
+        imagePullPolicy: Always
         resources:
           limits:
             cpu: 1.5
@@ -28,20 +29,4 @@ spec:
         env:
           - name: PORT
             value: "8080"
-
----
-# kubernetes-fastapi LoadBalancer Service
-# Enables the pods in a deployment to be accessible from outside the cluster
-apiVersion: v1
-kind: Service
-metadata:
-  name: pyrino
-spec:
-  selector:
-    app.kubernetes.io/name: pyrino
-  ports:
-    - protocol: "TCP"
-      port: 80
-      targetPort: 8080
-  type: LoadBalancer
 

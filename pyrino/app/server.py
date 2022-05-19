@@ -1,3 +1,4 @@
+import uuid
 from asyncio import gather
 from typing import Dict
 from sanic import Sanic
@@ -20,10 +21,10 @@ SUGGEST_RESPONSE = {
   "suggestions": [],
   "client_variants": [],
   "server_variants": [],
-  "request_id": "2fd3d126-dc91-4a9d-8aad-9b4bb7d85ed9"
+  "request_id": ""
 }
 
-@app.route("/search")
+@app.route("/api/v1/suggest")
 async def search(request):
     query = request.args.get("q")
     if "providers" in request.args:
@@ -34,9 +35,10 @@ async def search(request):
     results = await gather(*lookups)
     if len(results):
         SUGGEST_RESPONSE["suggestions"] = [sugg for provider_results in results for sugg in provider_results]
+    SUGGEST_RESPONSE["request_id"] = str(uuid.uuid4())
     return json(SUGGEST_RESPONSE)
 
-@app.route("/providers")
+@app.route("/api/v1/providers")
 async def providers(request):
     response = []
     for id, provider in app.ctx.providers.items():

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -37,7 +38,7 @@ public final class JarinoController {
      * Create an endpoint for the landing page
      * @return the index view template with a simple message
      */
-    @GetMapping("/search")
+    @GetMapping("/api/v1/suggest")
     public SuggestionResponse search(
         @RequestParam(value = "providers", defaultValue = "") String providers,
         @RequestParam(value = "q", defaultValue = "") String q) {
@@ -46,7 +47,7 @@ public final class JarinoController {
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
         return SuggestionResponse.builder()
-            .requestId("this-is-a-request")
+            .requestId(UUID.randomUUID().toString())
             .suggestions(suggestions)
             .build();
     }
