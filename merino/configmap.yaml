@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: merino
+data:
+  MERINO__ENV: "production"
+  MERINO__HTTP__LISTEN: "0.0.0.0:8000"
+  MERINO__METRICS__SINK_HOST: "127.0.0.1"
+  MERINO__METRICS__SINK_PORT: "8125"
+  MERINO__REDIS__URL: "redis://127.0.0.1:6379"
+  MERINO__SENTRY__MODE: "disabled"
+  MERINO__LOG_FULL_REQUEST: "false"
+  MERINO__PROVIDER_SETTINGS__TYPE: "local"
+  MERINO__PROVIDER_SETTINGS__PATH: "/app/config/providers/local.yaml"
+  MERINO__REMOTE_SETTINGS__CRON_INTERVAL_SEC: "60"
+  PORT: "8000"

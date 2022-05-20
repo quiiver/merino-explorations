@@ -8,7 +8,7 @@ const data = new SharedArray('query names', function () {
 const hosts = {
   "java": "http://34.123.70.140",
   "python": "http://34.69.18.217",
-  "rust": "https://stage.merino.nonprod.cloudops.mozgcp.net",
+  "rust": "http://104.197.80.2",
   "local": "http://127.0.0.1:8080"
 }
 
