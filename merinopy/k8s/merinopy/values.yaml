@@ -1,0 +1,43 @@
+# Default values for merinopy.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+appVersion: 1.0.0
+managedBy: Helm
+
+buildId: '1'
+
+environment: stagepy
+
+minReplicas: 15
+maxReplicas: 300
+
+isCanary: false
+
+dockerImage: us-central1-docker.pkg.dev/wstuckey-sandbox/pyrino-repo/merinopy:latest
+imagePullPolicy: Always
+
+serviceType: LoadBalancer
+appService: merinopy
+appServicePort: 80
+
+ingressEnabled: false
+ingressCertName: ""
+ingressStaticIpName: ""
+
+# configmap
+baseUrl: ""
+sentryEnvironment: "dev"
+useHostIpStatsd: false
+telegrafStatsdHost: "localhost"
+telegrafStatsdPort: 9000
+
+# secrets
+sentryDsn: ""
+
+resources:
+  limits:
+    memory: 500Mi
+  requests:
+    cpu: 1.5
+    memory: 100Mi

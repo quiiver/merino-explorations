@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "application.fullname" . }}{{ if .Values.isCanary }}-canary {{ end }}
+  labels:
+    jenkins-build-id: {{ .Values.buildId | quote }}
+    app.kubernetes.io/name: {{ template "application.name" . }}
+    app.kubernetes.io/instance: {{ .Values.environment }}
+    app.kubernetes.io/component: app
+    app.kubernetes.io/part-of: {{ template "application.name" . }}
+    app.kubernetes.io/managed-by: {{ .Values.managedBy }}
+spec:
+  progressDeadlineSeconds: 300
+  minReadySeconds: 10
+  revisionHistoryLimit: 10
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      fullname: {{ template "application.fullname" . }}{{ if .Values.isCanary }}-canary{{ end }}
+      app.kubernetes.io/name: {{ template "application.name" . }}
+      app.kubernetes.io/instance: {{ .Values.environment }}
+      app.kubernetes.io/component: app
+      app.kubernetes.io/part-of: {{ template "application.name" . }}
+      app.kubernetes.io/managed-by: {{ .Values.managedBy }}
+  template:
+    metadata:
+      annotations:
+        checksum/nginx-configmap: {{ include (print $.Template.BasePath "/nginx-configmap.yaml") . | sha256sum }}
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        fullname: {{ template "application.fullname" . }}{{ if .Values.isCanary }}-canary{{ end }}
+        jenkins-build-id: {{ .Values.buildId | quote }}
+        app.kubernetes.io/name: {{ template "application.name" . }}
+        app.kubernetes.io/version: {{ .Values.appVersion }}
+        app.kubernetes.io/instance: {{ .Values.environment }}
+        app.kubernetes.io/component: app
+        app.kubernetes.io/part-of: {{ template "application.name" . }}
+        app.kubernetes.io/managed-by: {{ .Values.managedBy }}
+    spec:
+      nodeSelector:
+        beta.kubernetes.io/instance-type: e2-highcpu-4
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: {{ template "application.fullname" . }}-nginx
+      containers:
+        - name: nginx
+          image: gcr.io/moz-fx-cloudops-images-global/nginx:1.15
+          ports:
+            - name: http
+              containerPort: 80
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/bash", "-c", "/bin/sleep 25 && /usr/sbin/nginx -s quit"]
+          resources:
+            requests:
+              memory: "15Mi"
+              cpu: "50m"
+          readinessProbe:
+            httpGet:
+              path: /__lbheartbeat__
+              port: http
+            periodSeconds: 6
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+            initialDelaySeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /__nginxheartbeat__
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 6
+            timeoutSeconds: 2
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.dockerImage }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          ports:
+            - name: app
+              containerPort: 8000
+              protocol: TCP
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sleep", "25"]
+          livenessProbe:
+            httpGet:
+              path: /__lbheartbeat__
+              port: app
+            periodSeconds: 6
+            timeoutSeconds: 5
+            failureThreshold: 5
+            initialDelaySeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /__lbheartbeat__
+              port: app
+            periodSeconds: 6
+            timeoutSeconds: 5
+            initialDelaySeconds: 10
+          envFrom:
+            - configMapRef:
+                name: {{ template "application.fullname" . }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}

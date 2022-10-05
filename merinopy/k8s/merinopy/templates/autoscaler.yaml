@@ -1,0 +1,21 @@
+{{- if not .Values.isCanary -}}
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "application.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ template "application.name" . }}
+    app.kubernetes.io/version: {{ .Values.appVersion }}
+    app.kubernetes.io/instance: {{ .Values.environment }}
+    app.kubernetes.io/component: app
+    app.kubernetes.io/part-of: {{ template "application.name" . }}
+    app.kubernetes.io/managed-by: {{ .Values.managedBy }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "application.fullname" . }}
+  minReplicas: {{ .Values.minReplicas }}
+  maxReplicas: {{ .Values.maxReplicas }}
+  targetCPUUtilizationPercentage: 75
+{{- end -}}

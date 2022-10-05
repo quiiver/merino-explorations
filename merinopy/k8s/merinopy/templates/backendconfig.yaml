@@ -1,0 +1,15 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: {{ template "application.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ template "application.name" . }}
+    app.kubernetes.io/version: {{ .Values.appVersion }}
+    app.kubernetes.io/instance: {{ .Values.environment }}
+    app.kubernetes.io/component: app
+    app.kubernetes.io/part-of: {{ template "application.name" . }}
+    app.kubernetes.io/managed-by: {{ .Values.managedBy }}
+spec:
+  logging:
+    enable: false
+    sampleRate: 0.0

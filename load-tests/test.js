@@ -7,9 +7,9 @@ const data = new SharedArray('query names', function () {
 
 const hosts = {
   "java": "http://34.123.70.140",
-  "python": "http://34.69.18.217",
+  "python": "http://34.67.8.144",
   "rust": "http://104.197.80.2",
-  "local": "http://127.0.0.1:8080"
+  "local": "http://127.0.0.1:8000"
 }
 
 const providers = __ENV.PROVIDERS || ""

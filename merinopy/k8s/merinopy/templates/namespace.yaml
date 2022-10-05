@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app.kubernetes.io/name: {{ template "application.name" . }}
+    app.kubernetes.io/part-of: {{ template "application.name" . }}
+    app.kubernetes.io/managed-by: {{ .Values.managedBy }}
